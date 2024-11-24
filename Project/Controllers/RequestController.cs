@@ -6,7 +6,7 @@ using Project.Models;
 
 namespace Project.Controllers
 {
-    public class RequestController : Controller
+    public class RequestController : ControllerBase
     {
         private readonly ILogger<RequestController> _logger;
 
