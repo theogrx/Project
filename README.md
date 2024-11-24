@@ -12,9 +12,9 @@ The **Country Information API** is a RESTful service that provides country-relat
 - **Models**: Defines the structure of the country data and DTOs used in API responses.
 
 ## Technologies
-- **.NET 6/7**: The application is built using the .NET framework, with dependency injection and middleware to handle requests and responses.
+- **.NET 8**: The application is built using the .NET framework, with dependency injection and middleware to handle requests and responses.
 - **Entity Framework Core**: ORM (Object Relational Mapper) to interact with a SQL Server database.
-- **SQL Server**: The database used for storing country data.
+- **SQL Server 2022**: The database used for storing country data.
 - **External REST API (e.g., RestCountries API)**: Data is fetched from an external API for country information when necessary.
 - **Custom Memory Cache**: Used to store and retrieve country data to optimize API calls.
 - **Postman/Swagger**: Used for testing and interacting with the API.
