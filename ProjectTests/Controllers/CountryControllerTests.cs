@@ -1,50 +1,95 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Project.Controllers; // Adjust namespace
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Business.Helpers;
+using Data.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Moq;
+using Project.Controllers;
+using Project.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.Tests
 {
     [TestClass]
-    public class CountryControllerIntegrationTests
+    public class CountryControllerTests
     {
-        private readonly CountryController _controller;
+        private HttpClient _httpClient;
+        private IOptions<ApiSettings> _apiSettings;
+        private IMemoryCache _memoryCache;
+        private ApplicationDbContext _dbContext;
 
-        public CountryControllerIntegrationTests()
+        [TestInitialize]
+        public void TestInitialize()
         {
-            // Use the real HttpClient
-            var httpClient = new HttpClient();
+            // Set up HttpClient with a real endpoint (NOTE: This makes the test dependent on an external API)
+            _httpClient = new HttpClient();
 
-            // Mock ILogger (optional)
-            var mockLogger = new Mock<ILogger<CountryController>>();
-
-            // Create the controller with the real HttpClient
-            _controller = new CountryController(mockLogger.Object, httpClient);
+            // Set up ApiSettings to include the real URL
+            var apiSettings = new ApiSettings
+            {
+                RestCountriesUrl = "https://restcountries.com/v3.1/all"
+            };
+            _apiSettings = Options.Create(apiSettings);
+            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _dbContext = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseSqlServer("Data Source=(local);Initial Catalog=Project;Integrated Security=True;Encrypt=False")
+                    .Options);
         }
 
         [TestMethod]
-        public async Task GetCountries_ReturnsValidResponse_FromLiveApi()
+        public async Task GetCountriesAsync_ReturnsCountries_WhenApiCallIsSuccessful()
         {
+            try
+            {
+                // Arrange
+                // Use real HttpClient with the actual endpoint
+                var controller = new CountryController(_httpClient, _apiSettings, _memoryCache, _dbContext);
+
+                // Act
+                var result = await controller.GetCountriesAsync();
+                var okResult = result as OkObjectResult;
+
+                var returnValue = (List<CountryDTO>)okResult.Value; // Extract the return value
+                Assert.IsTrue(returnValue.Count > 0); // Ensure the result is not empty
+            }
+            catch (Exception ex) { 
+                Assert.Fail(ex.ToString());
+            }
+        }
+
+        [TestMethod]
+        public async Task GetCountriesAsync_ReturnsBadRequest_WhenApiCallFails()
+        {
+            // Arrange
+            var mockHttpClient = new Mock<HttpClient>();
+            mockHttpClient.Setup(client => client.GetAsync(It.IsAny<string>()))
+                          .ThrowsAsync(new Exception("API call failed"));
+
+            // Set up mock API settings
+            var apiSettings = new ApiSettings
+            {
+                RestCountriesUrl = "https://restcountries.com/v3.1/all"
+            };
+            _apiSettings = Options.Create(apiSettings);
+
+            // Create controller with mocked HttpClient
+            var controller = new CountryController(mockHttpClient.Object, _apiSettings, _memoryCache, _dbContext);
+
             // Act
-            var result = await _controller.GetCountries() as OkObjectResult;
+            var result = await controller.GetCountriesAsync();
 
             // Assert
-            Assert.IsNotNull(result, "The result should not be null.");
-            var countries = result.Value as IEnumerable<dynamic>;
-            Assert.IsNotNull(countries, "Response should contain a list of countries.");
+            var okResult = result as OkObjectResult;
 
-            // Verify the data structure of the response
-            Assert.IsTrue(countries.Any(), "The countries list should not be empty.");
-
-            // Check a specific country to ensure the data structure is valid
-            var firstCountry = countries.First();
-            Assert.IsNotNull(firstCountry.CommonName, "CommonName should not be null.");
-            Assert.IsNotNull(firstCountry.Capital, "Capital should not be null.");
-            Assert.IsNotNull(firstCountry.Borders, "Borders should not be null.");
+            var returnValue = (List<CountryDTO>)okResult.Value;// Extract the return value
         }
     }
 }

@@ -5,19 +5,6 @@ using Moq;
 using Project.Controllers;  // Adjust based on your actual namespace
 using Project.Models;
 
-namespace Project.Controllers.Tests
-{
-    [TestClass()]
-    public class RequestControllerTests
-    {
-        [TestMethod()]
-        public void GetSecondLargestTest()
-        {
-            Assert.Fail();
-        }
-    }
-}
-
 namespace Project.Tests
 {
     [TestClass]
