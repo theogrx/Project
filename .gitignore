@@ -8,3 +8,5 @@
 /Project/bin/Debug/net8.0
 /ProjectTests/bin/Debug/net8.0
 /ProjectTests/obj
+/.vs
+/Project/.vs
