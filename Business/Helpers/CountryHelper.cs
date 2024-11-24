@@ -10,10 +10,11 @@ namespace Business.Helpers
         private readonly ApplicationDbContext _dbContext;
         private readonly HttpClient _httpClient;
         private readonly string _restCountriesUrl;
-        private readonly IMemoryCache _memoryCache;
+        private readonly CustomMemoryCache _memoryCache; // Use CustomMemoryCache
+
         private bool _disposed = false;
 
-        public CountryHelper(HttpClient httpClient, ApplicationDbContext dbContext, string restCountriesUrl, IMemoryCache memoryCache)
+        public CountryHelper(HttpClient httpClient, ApplicationDbContext dbContext, string restCountriesUrl, CustomMemoryCache memoryCache)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
@@ -52,8 +53,8 @@ namespace Business.Helpers
         /// <returns>A list of country DTOs.</returns>
         public List<CountryDTO> FetchCountriesFromCache()
         {
-            CustomMemoryCache cache = new CustomMemoryCache();
-            if (cache.TryGetValue("Countries", out List<CountryDTO> cachedCountries))
+
+            if (_memoryCache.TryGetValue("Countries", out List<CountryDTO> cachedCountries))
             {
                 // Return the cached result
                 return cachedCountries;

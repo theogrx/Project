@@ -23,7 +23,7 @@ namespace Project.Tests
     {
         private HttpClient _httpClient;
         private IOptions<ApiSettings> _apiSettings;
-        private IMemoryCache _memoryCache;
+        private CustomMemoryCache _memoryCache;
         private ApplicationDbContext _dbContext;
 
         [TestInitialize]
@@ -38,7 +38,7 @@ namespace Project.Tests
                 RestCountriesUrl = "https://restcountries.com/v3.1/all"
             };
             _apiSettings = Options.Create(apiSettings);
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _memoryCache = new CustomMemoryCache();
             _dbContext = new ApplicationDbContext(new DbContextOptionsBuilder<ApplicationDbContext>()
                     .UseSqlServer("Data Source=(local);Initial Catalog=Project;Integrated Security=True;Encrypt=False")
                     .Options);

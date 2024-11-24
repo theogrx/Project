@@ -19,10 +19,10 @@ namespace Project.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly string _restCountriesUrl;
-        private readonly IMemoryCache _memoryCache;
+        private readonly CustomMemoryCache _memoryCache;
         private readonly ApplicationDbContext _dbContext;
 
-        public CountryController(HttpClient httpClient, IOptions<ApiSettings> apiSettings, IMemoryCache memoryCache, ApplicationDbContext dbContext)
+        public CountryController(HttpClient httpClient, IOptions<ApiSettings> apiSettings, CustomMemoryCache memoryCache, ApplicationDbContext dbContext)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _restCountriesUrl = apiSettings?.Value?.RestCountriesUrl ?? throw new ArgumentNullException("RestCountriesUrl is not configured.");

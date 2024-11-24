@@ -24,6 +24,7 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 // Register HttpClient for API calls (this is crucial for CountryHelper)
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache(); // Adds IMemoryCache
+builder.Services.AddSingleton<CustomMemoryCache>();
 
 // Register CountryHelper with HttpClient and configuration from ApiSettings
 builder.Services.AddScoped(sp =>
@@ -31,7 +32,7 @@ builder.Services.AddScoped(sp =>
     var httpClient = sp.GetRequiredService<HttpClient>(); // Get HttpClient instance
     var dbContext = sp.GetRequiredService<ApplicationDbContext>(); // Get DbContext instance
     var apiSettings = builder.Configuration.GetSection("ApiSettings").Get<ApiSettings>(); // Get configuration values
-    var memoryCache = sp.GetRequiredService<IMemoryCache>(); // Get IMemoryCache instance
+    var memoryCache = sp.GetRequiredService<CustomMemoryCache>(); // Get IMemoryCache instance
 
     return new CountryHelper(httpClient, dbContext, apiSettings?.RestCountriesUrl, memoryCache); // Pass HttpClient and the API URL to CountryHelper
 });
