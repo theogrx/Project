@@ -11,6 +11,12 @@ namespace Business.Helpers
         private readonly Dictionary<object, object> _cache;
         private readonly Dictionary<object, DateTime> _expirationTimes;
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// <summary>   Default constructor. </summary>
+        ///
+        /// <remarks>   Teo, 25-Nov-24. </remarks>
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
         public CustomMemoryCache()
         {
             _cache = new Dictionary<object, object>();
@@ -30,7 +36,7 @@ namespace Business.Helpers
             _expirationTimes.Clear();
         }
 
-        // Try to get a value from the cache
+        // Try to get a value from the cache.
         public bool TryGetValue(object key, out object value)
         {
             // Check if the item exists and has not expired
@@ -59,7 +65,12 @@ namespace Business.Helpers
         }
     }
 
-    // Custom cache entry class implementing ICacheEntry
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// <summary>   Custom cache entry class implementing ICacheEntry. </summary>
+    ///
+    /// <remarks>   Teo, 25-Nov-24. </remarks>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public class CustomCacheEntry : ICacheEntry
     {
         public object Key { get; }

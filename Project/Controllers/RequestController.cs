@@ -6,6 +6,8 @@ using Project.Models;
 
 namespace Project.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class RequestController : ControllerBase
     {
         private readonly ILogger<RequestController> _logger;
